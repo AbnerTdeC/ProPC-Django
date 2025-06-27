@@ -1,0 +1,93 @@
+/* Override Bootstrap with Dark Tech/Gamer Theme */
+
+body {
+    background-color: #0a0a23 !important;
+    color: #e0e0e0 !important;
+    font-family: 'Share Tech', monospace !important;
+}
+
+.container {
+    background-color: #121133 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 0 30px #00ffea !important;
+    padding: 30px !important;
+    margin-top: 40px !important;
+    margin-bottom: 40px !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #00ffea !important;
+    text-shadow: 0 0 8px #00ffea !important;
+    font-family: 'Orbitron', sans-serif !important;
+}
+
+.btn-primary {
+    background-color: #00ffea !important;
+    border-color: #00ffea !important;
+    color: #121133 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 0 15px #00ffea !important;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.btn-primary:hover {
+    background-color: #ff005c !important;
+    border-color: #ff005c !important;
+    color: white !important;
+    box-shadow: 0 0 20px #ff005c !important;
+}
+
+.card {
+    background-color: #1a1a4d !important;
+    border: 1px solid #00ffea !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 10px #00ffea !important;
+    color: #e0e0e0 !important;
+}
+
+.card img {
+    border-radius: 8px !important;
+    box-shadow: 0 0 10px #00ffea !important;
+}
+
+.card-body {
+    padding: 15px !important;
+}
+
+a {
+    color: #00ffea !important;
+    text-decoration: none !important;
+}
+
+a:hover {
+    color: #ff005c !important;
+    text-shadow: 0 0 8px #ff005c !important;
+}
+
+.site-header {
+    background-color: #121133 !important;
+    border-bottom: 2px solid #3a3a8c !important;
+    box-shadow: 0 0 15px #3a3a8c !important;
+}
+
+.site-footer {
+    background-color: #121133 !important;
+    border-top: 2px solid #3a3a8c !important;
+    color: #00ffea !important;
+    box-shadow: 0 0 15px #3a3a8c inset !important;
+}
+
+.site-logo {
+    color: #00ffea !important;
+    text-shadow: 0 0 10px #00ffea !important;
+}
+
+.site-nav ul li a {
+    color: #e0e0e0 !important;
+}
+
+.site-nav ul li a:hover {
+    color: #00ffea !important;
+    text-shadow: 0 0 8px #00ffea !important;
+}

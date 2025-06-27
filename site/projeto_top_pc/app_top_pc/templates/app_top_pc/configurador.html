@@ -1,0 +1,36 @@
+{% extends 'app_top_pc/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Configurador - CyberCircuitPCs{% endblock title %}
+
+{% block content %}
+<div class="configurador-container">
+    <h1>Configurador de PC</h1>
+    <form method="post">
+        {% csrf_token %}
+{% for categoria in categorias %}
+    <label for="categoria_{{ forloop.counter }}">{{ categoria }}</label>
+    <select name="categoria_{{ categoria }}" id="categoria_{{ forloop.counter }}">
+        <option value="">Selecione um produto</option>
+        {% for produto in produtos_por_categoria|get_item:categoria %}
+            <option value="{{ produto.id }}" {% if selecionados|get_item:categoria == produto %}selected{% endif %}>{{ produto.nome }}</option>
+        {% endfor %}
+    </select>
+    <br>
+{% endfor %}
+        <button type="submit" class="btn btn-primary">Salvar Configuração</button>
+    </form>
+
+    {% if selecionados %}
+        <div class="configuracao-selecionada">
+            <h2>Configuração Selecionada</h2>
+            <ul>
+                {% for categoria, produto in selecionados.items %}
+                    <li>{{ categoria }}: {{ produto.nome }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

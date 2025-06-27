@@ -1,0 +1,249 @@
+{% extends 'app_top_pc/base.html' %}
+{% load static %}
+
+{% block title %}Pro PC - Plataforma de Venda de PCs{% endblock title %}
+
+{% block extra_css %}
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    
+    <style>
+        /* Override base styles for index page specific styling */
+        body {
+            background-color: #0f0f3d;
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Custom navbar styling for index page */
+        .site-header {
+            background-color: #0f0f3d !important;
+            border-bottom: 1px solid #3a3a7a;
+        }
+        
+        .site-logo {
+            color: #0dcaf0 !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .site-nav a {
+            color: #ddd !important;
+            transition: color 0.3s;
+        }
+        
+        .site-nav a:hover {
+            color: #0dcaf0 !important;
+            background-color: transparent !important;
+        }
+        
+        /* Content boxes */
+        .content-box {
+            border: 1px solid #3a3a7a;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            background-color: #121244;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .content-box:hover {
+            box-shadow: 0 0 15px #0dcaf0;
+        }
+        
+        .content-box h5 {
+            color: #0dcaf0;
+            font-family: var(--font-primary);
+        }
+        
+        /* Product items */
+        .product-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+        
+        .product-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 0 8px #0dcaf0;
+            transition: transform 0.3s ease;
+        }
+        
+        .product-item img:hover {
+            transform: scale(1.1);
+        }
+        
+        .product-info {
+            flex-grow: 1;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+            color: #fff;
+        }
+        
+        .product-price {
+            font-size: 0.9rem;
+            color: #a0e9ff;
+        }
+        
+        /* Promotion items */
+        .promotion-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+        
+        .promotion-item img {
+            width: 100px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 0 8px #0dcaf0;
+            transition: transform 0.3s ease;
+        }
+        
+        .promotion-item img:hover {
+            transform: scale(1.05);
+        }
+        
+        .promotion-info {
+            color: #cce7ff;
+            font-size: 0.9rem;
+        }
+        
+        /* Welcome box */
+        .welcome-box {
+            border: 1px solid #3a3a7a;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.1rem;
+            background-color: #121244;
+            box-shadow: 0 0 10px #0dcaf0;
+            margin-bottom: 2rem;
+            color: #0dcaf0;
+        }
+        
+        /* Footer override */
+        .site-footer {
+            background-color: #0f0f3d !important;
+            color: #bbb;
+            padding: 1.5rem 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .site-footer a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .site-footer a:hover {
+            color: #0dcaf0;
+        }
+        
+        /* Main content layout */
+        @media (min-width: 768px) {
+            .main-content {
+                display: flex;
+                gap: 2rem;
+            }
+            .content-box {
+                flex: 1;
+            }
+        }
+    </style>
+{% endblock extra_css %}
+
+{% block content %}
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Featured Products -->
+        <section class="content-box">
+            <h5 class="mb-4">Featured Products</h5>
+            <div class="product-item">
+                <img src="{% static 'app_top_pc/monstruosidade_gamer.jpg' %}" alt="Monstruosidade Gamer" />
+                <div class="product-info">
+                    <div class="product-name">Monstruosidade Gamer</div>
+                    <div class="product-price">R$ 12000,00</div>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="{% static 'app_top_pc/workstation_pro.jpg' %}" alt="Workstation Pro" />
+                <div class="product-info">
+                    <div class="product-name">Workstation Pro</div>
+                    <div class="product-price">R$ 8000,00</div>
+                </div>
+            </div>
+            <div class="product-item">
+                <img src="{% static 'app_top_pc/mini_pc.jpg' %}" alt="Mini PC" />
+                <div class="product-info">
+                    <div class="product-name">Mini PC</div>
+                    <div class="product-price">R$ 4000,00</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Promotions -->
+        <section class="content-box">
+            <h5 class="mb-4">Promoções Atuais</h5>
+            <div class="promotion-item">
+                <img src="{% static 'app_top_pc/promocao_acessorios.jpg' %}" alt="20% OFF" />
+                <div class="promotion-info">
+                    <strong>20% em acessórios</strong><br />
+                    Oferta por tempo limitado! Corra!
+                </div>
+            </div>
+            <div class="promotion-item">
+                <img src="{% static 'app_top_pc/promocao_conjunto.jpg' %}" alt="Oferta de conjunto" />
+                <div class="promotion-info">
+                    <strong>Oferta de conjunto!</strong><br />
+                    Economize R$500,00 comprando um setup completo!
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Welcome Message -->
+    <div class="welcome-box">
+        Bem-vindo a Pro PC o lugar onde seu PC dos sonhos se torna realidade!
+    </div>
+{% endblock content %}
+
+{% block javascript %}
+    {{ block.super }}
+    <!-- Custom JS for animations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const contentBoxes = document.querySelectorAll('.content-box');
+            contentBoxes.forEach(box => {
+                box.style.opacity = 0;
+                box.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    box.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    box.style.opacity = 1;
+                    box.style.transform = 'translateY(0)';
+                }, 200);
+            });
+
+            const welcomeBox = document.querySelector('.welcome-box');
+            if (welcomeBox) {
+                welcomeBox.style.opacity = 0;
+                welcomeBox.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    welcomeBox.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                    welcomeBox.style.opacity = 1;
+                    welcomeBox.style.transform = 'scale(1)';
+                }, 800);
+            }
+        });
+    </script>
+{% endblock javascript %}

@@ -1,0 +1,17 @@
+{% extends 'app_top_pc/base.html' %}
+{% load static %} {# Pode ser removido se base.html já tem #}
+
+{% block title %}Remover Dado: {{ componente.nome }}{% endblock title %}
+
+{% block content %}
+<div class="container confirmation-page-container"> <h1>Remover Dado</h1>
+    <p>Você tem certeza que deseja remover o componente "<strong>{{ componente.nome }}</strong>"?</p>
+    <p>Esta ação não poderá ser desfeita.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sim, Remover</button>
+        <a href="{% url 'app_top_pc:home' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock content %}

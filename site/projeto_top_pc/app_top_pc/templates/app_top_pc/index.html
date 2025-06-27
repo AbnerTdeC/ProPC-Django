@@ -1,0 +1,104 @@
+{% extends 'app_top_pc/base.html' %}
+{% load static %}
+
+{% block title %}Pro PC - Plataforma de Venda de PCs{% endblock title %}
+
+{% block extra_css %}
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+{% endblock extra_css %}
+
+{% block content %}
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Featured Products -->
+        <section class="content-box">
+            <h5>Featured Products</h5>
+            <div class="product-item">
+                <div class="product-placeholder">
+                    <i class="bi bi-gpu-card" style="font-size: 3em; color: var(--accent-color);"></i>
+                </div>
+                <div class="product-info">
+                    <div class="name">Monstruosidade Gamer</div>
+                    <div class="price">R$ 12000,00</div>
+                </div>
+            </div>
+            <div class="product-item">
+                <div class="product-placeholder">
+                    <i class="bi bi-pc-display" style="font-size: 3em; color: var(--accent-color);"></i>
+                </div>
+                <div class="product-info">
+                    <div class="name">Workstation Pro</div>
+                    <div class="price">R$ 8000,00</div>
+                </div>
+            </div>
+            <div class="product-item">
+                <div class="product-placeholder">
+                    <i class="bi bi-laptop" style="font-size: 3em; color: var(--accent-color);"></i>
+                </div>
+                <div class="product-info">
+                    <div class="name">Mini PC</div>
+                    <div class="price">R$ 4000,00</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Promotions -->
+        <section class="content-box">
+            <h5>Promoções Atuais</h5>
+            <div class="promotion-item">
+                <div class="promotion-placeholder">
+                    <i class="bi bi-percent" style="font-size: 2.5em; color: var(--accent-color);"></i>
+                </div>
+                <div class="promotion-info">
+                    <strong>20% em acessórios</strong><br />
+                    Oferta por tempo limitado! Corra!
+                </div>
+            </div>
+            <div class="promotion-item">
+                <div class="promotion-placeholder">
+                    <i class="bi bi-gift" style="font-size: 2.5em; color: var(--accent-color);"></i>
+                </div>
+                <div class="promotion-info">
+                    <strong>Oferta de conjunto!</strong><br />
+                    Economize R$500,00 comprando um setup completo!
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Welcome Message -->
+    <div class="welcome-box">
+        Bem-vindo a Pro PC o lugar onde seu PC dos sonhos se torna realidade!
+    </div>
+{% endblock content %}
+
+{% block javascript %}
+    {{ block.super }}
+    <!-- Custom JS for animations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const contentBoxes = document.querySelectorAll('.content-box');
+            contentBoxes.forEach(box => {
+                box.style.opacity = 0;
+                box.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    box.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    box.style.opacity = 1;
+                    box.style.transform = 'translateY(0)';
+                }, 200);
+            });
+
+            const welcomeBox = document.querySelector('.welcome-box');
+            if (welcomeBox) {
+                welcomeBox.style.opacity = 0;
+                welcomeBox.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    welcomeBox.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                    welcomeBox.style.opacity = 1;
+                    welcomeBox.style.transform = 'scale(1)';
+                }, 800);
+            }
+        });
+    </script>
+{% endblock javascript %}

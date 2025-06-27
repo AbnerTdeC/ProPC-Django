@@ -1,0 +1,88 @@
+{% extends 'app_top_pc/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Configurador - ProPC{% endblock title %}
+
+{% block content %}
+<script src="{% static 'js/configurador.js' %}"></script>
+<div class="configurador-container">
+    <h1>Configurador de PC</h1>
+    <p>Monte seu PC personalizado selecionando os componentes abaixo:</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        {% for categoria in categorias %}
+            <div class="categoria-section" style="margin-bottom: 20px;">
+                <label for="categoria_{{ forloop.counter }}" style="font-weight: bold; display: block; margin-bottom: 5px;">
+                    {{ categoria|title }}
+                    {% with produtos_categoria=produtos_por_categoria|get_item:categoria %}
+                        <span style="color: #666; font-size: 0.9em;">
+                            ({{ produtos_categoria|length }} produtos disponíveis)
+                        </span>
+                    {% endwith %}
+                </label>
+                
+                <!-- Campo de pesquisa -->
+                <div style="position: relative; margin-bottom: 10px;">
+                    <input type="text" 
+                           id="pesquisa_{{ categoria }}" 
+                           placeholder="Pesquisar {{ categoria|title }}..."
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
+                           oninput="filtrarProdutos('{{ categoria }}', this.value)">
+                </div>
+
+                <select name="categoria_{{ categoria }}" 
+                        id="categoria_{{ forloop.counter }}" 
+                        style="width: 100%; padding: 8px; margin-bottom: 10px;"
+                        data-categoria="{{ categoria }}">
+                    <option value="">Selecione um {{ categoria }}</option>
+                    {% for produto in produtos_por_categoria|get_item:categoria %}
+                        <option value="{{ produto.id }}" {% if selecionados|get_item:categoria == produto %}selected{% endif %}>
+                            {{ produto.nome }}
+                        </option>
+                    {% empty %}
+                        <option value="" disabled>Nenhum produto disponível para esta categoria</option>
+                    {% endfor %}
+                </select>
+                
+                {% with produtos_categoria=produtos_por_categoria|get_item:categoria %}
+                    {% if not produtos_categoria %}
+                        <small style="color: #e74c3c; display: block;">
+                            ⚠️ Não foi possível carregar produtos para esta categoria. Verifique sua conexão com a internet.
+                        </small>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn btn-primary" style="background-color: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+            Salvar Configuração
+        </button>
+    </form>
+
+    {% if selecionados %}
+        <div class="configuracao-selecionada" style="margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 5px;">
+            <h2>Configuração Selecionada</h2>
+            <ul style="list-style-type: none; padding: 0;">
+                {% for categoria, produto in selecionados.items %}
+                    <li style="padding: 5px 0; border-bottom: 1px solid #ddd;">
+                        <strong>{{ categoria|title }}:</strong> {{ produto.nome }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    
+    <!-- Debug information (remove in production) -->
+    {% if debug %}
+        <div style="margin-top: 30px; padding: 15px; background-color: #f1f1f1; border-radius: 5px; font-family: monospace; font-size: 12px;">
+            <h3>Debug Info:</h3>
+            <p>Total de categorias: {{ categorias|length }}</p>
+            {% for categoria in categorias %}
+                <p>{{ categoria }}: {{ produtos_por_categoria|get_item:categoria|length }} produtos</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

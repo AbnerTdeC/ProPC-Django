@@ -17,6 +17,7 @@ urlpatterns = [
     # /aplicativo/ -> home do app
     # /aplicativo/componente/adicionar/ -> adicionar_componente do app
     path('', include('app_top_pc.urls')), # Use um caminho vazio '' como prefixo
+    path('catalogo/', include('app_catalogo.urls')), # URLs do catálogo separado
 
     # Opção 2: Incluir na raiz do site (sem prefixo)
     # A home do app_top_pc será a home do site (http://127.0.0.1:8000/)

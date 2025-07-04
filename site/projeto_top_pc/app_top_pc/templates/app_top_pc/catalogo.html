@@ -1,22 +1,200 @@
 {% extends 'app_top_pc/base.html' %}
 {% load static %}
 
-{% block title %}Catálogo - CyberCircuitPCs{% endblock title %}
+{% block title %}Catálogo - ProPC{% endblock title %}
 
 {% block content %}
 <h2>Catálogo de Produtos</h2>
+<p style="text-align: center; margin-bottom: 30px; color: var(--subtitle-color);">
+    Produtos disponíveis para compra com preços e estoque atualizados.
+</p>
+
 <div class="product-list">
     {% for produto in produtos %}
     <div class="product-item">
-        <img src="{{ produto.imagem_url|default:'https://via.placeholder.com/80' }}" alt="Ícone de {{ produto.nome }}">
+        <!-- Cabeçalho do produto -->
         <div class="product-info">
-            <div class="name">{{ produto.nome }}</div>
-            <div class="description">{{ produto.descricao|truncatewords:20 }}</div>
-            <div class="price">R$ {{ produto.preco }}</div>
+            <div class="name">{{ produto.componente_base.nome }}</div>
+            
+            <div style="margin-bottom: 15px;">
+                <span style="background-color: var(--accent-color); color: var(--primary-bg-color); padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 500; font-family: var(--font-primary);">
+                    {{ produto.componente_base.get_tipo_componente_display }}
+                </span>
+            </div>
+            
+            <!-- Descrição -->
+            <div class="description">
+                {{ produto.componente_base.descricao|truncatewords:20 }}
+            </div>
+            
+            <!-- Especificações técnicas -->
+            {% if produto.componente_base.especificacoes %}
+                <div style="margin: 15px 0; padding: 15px; background-color: var(--secondary-bg-color); border-radius: 6px; border-left: 3px solid var(--accent-color);">
+                    <strong style="font-size: 0.9em; color: var(--accent-color); font-family: var(--font-primary);">Especificações:</strong>
+                    <ul style="margin: 8px 0 0 0; padding-left: 15px; font-size: 0.85em; color: var(--text-color);">
+                        {% for chave, valor in produto.componente_base.especificacoes.items %}
+                            <li style="margin-bottom: 3px;">
+                                <strong style="color: var(--accent-color);">{{ chave }}:</strong> {{ valor }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            <!-- Preço e status -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-color);">
+                <div class="price-section">
+                    {% if produto.preco_promocional %}
+                        <div class="price" style="color: #ff4757; font-size: 1.4em;">
+                            R$ {{ produto.preco_promocional }}
+                        </div>
+                        <div style="color: var(--text-color); text-decoration: line-through; font-size: 0.9em; opacity: 0.7;">
+                            R$ {{ produto.preco }}
+                        </div>
+                    {% else %}
+                        <div class="price">
+                            R$ {{ produto.preco }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="status-section" style="text-align: right;">
+                    {% if produto.status == 'disponivel' %}
+                        {% if produto.estoque > 0 %}
+                            <div style="color: #2ed573; font-weight: 600; font-size: 0.9em; font-family: var(--font-primary);">
+                                ✓ Disponível
+                            </div>
+                            <div style="font-size: 0.8em; color: var(--text-color); opacity: 0.8;">
+                                {{ produto.estoque }} em estoque
+                            </div>
+                        {% else %}
+                            <div style="color: #ffa502; font-weight: 600; font-size: 0.9em; font-family: var(--font-primary);">
+                                ⚠ Sem estoque
+                            </div>
+                        {% endif %}
+                    {% elif produto.status == 'indisponivel' %}
+                        <div style="color: #ff4757; font-weight: 600; font-size: 0.9em; font-family: var(--font-primary);">
+                            ✗ Indisponível
+                        </div>
+                    {% elif produto.status == 'descontinuado' %}
+                        <div style="color: #747d8c; font-weight: 600; font-size: 0.9em; font-family: var(--font-primary);">
+                            ⊘ Descontinuado
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Informações do fornecedor -->
+            {% if produto.fornecedor %}
+                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border-color); font-size: 0.8em; color: var(--text-color); opacity: 0.8;">
+                    <strong style="color: var(--accent-color);">Fornecedor:</strong> {{ produto.fornecedor }}
+                    {% if produto.codigo_produto %}
+                        <br><strong style="color: var(--accent-color);">Código:</strong> {{ produto.codigo_produto }}
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <!-- Observações -->
+            {% if produto.observacoes %}
+                <div style="margin-top: 15px; padding: 10px; background-color: var(--secondary-bg-color); border-left: 3px solid var(--accent-color); font-size: 0.85em; border-radius: 0 4px 4px 0;">
+                    <strong style="color: var(--accent-color);">Obs:</strong> {{ produto.observacoes }}
+                </div>
+            {% endif %}
+            
+            <!-- Data de atualização -->
+            <div style="margin-top: 15px; font-size: 0.75em; color: var(--text-color); opacity: 0.6; text-align: right; font-family: var(--font-secondary);">
+                Atualizado: {{ produto.data_atualizacao|date:"d/m/Y H:i" }}
+            </div>
         </div>
     </div>
     {% empty %}
-    <p>Nenhum produto cadastrado ainda.</p>
+    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-color);">
+        <div style="font-size: 4em; margin-bottom: 20px; color: var(--accent-color);">📦</div>
+        <h3 style="margin: 0 0 15px 0; color: var(--heading-color); font-family: var(--font-primary);">
+            Nenhum produto no catálogo
+        </h3>
+        <p style="margin: 0; font-size: 1.1em; color: var(--subtitle-color);">
+            Os produtos serão adicionados manualmente pelos administradores.
+        </p>
+    </div>
     {% endfor %}
 </div>
+
+<!-- Estatísticas do catálogo -->
+{% if produtos %}
+    <div class="content-box" style="margin-top: 40px;">
+        <h3 style="margin: 0 0 20px 0; color: var(--accent-color); font-family: var(--font-primary); text-align: center;">
+            Estatísticas do Catálogo
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+            <div style="text-align: center; padding: 20px; background-color: var(--secondary-bg-color); border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="font-size: 2.5em; font-weight: bold; color: var(--accent-color); font-family: var(--font-primary); margin-bottom: 5px;">
+                    {{ produtos|length }}
+                </div>
+                <div style="font-size: 0.9em; color: var(--text-color); font-family: var(--font-secondary);">
+                    Total de produtos
+                </div>
+            </div>
+            <div style="text-align: center; padding: 20px; background-color: var(--secondary-bg-color); border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="font-size: 2.5em; font-weight: bold; color: #2ed573; font-family: var(--font-primary); margin-bottom: 5px;">
+                    {% with disponivel_count=0 %}
+                        {% for produto in produtos %}
+                            {% if produto.disponivel %}
+                                {% with disponivel_count=disponivel_count|add:1 %}{% endwith %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ disponivel_count }}
+                    {% endwith %}
+                </div>
+                <div style="font-size: 0.9em; color: var(--text-color); font-family: var(--font-secondary);">
+                    Produtos disponíveis
+                </div>
+            </div>
+            <div style="text-align: center; padding: 20px; background-color: var(--secondary-bg-color); border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="font-size: 2.5em; font-weight: bold; color: #ff4757; font-family: var(--font-primary); margin-bottom: 5px;">
+                    {% with promocao_count=0 %}
+                        {% for produto in produtos %}
+                            {% if produto.preco_promocional %}
+                                {% with promocao_count=promocao_count|add:1 %}{% endwith %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ promocao_count }}
+                    {% endwith %}
+                </div>
+                <div style="font-size: 0.9em; color: var(--text-color); font-family: var(--font-secondary);">
+                    Em promoção
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<style>
+/* Animações específicas para o catálogo */
+.product-item {
+    animation: fadeInUp 0.6s ease-out;
+    animation-fill-mode: both;
+}
+
+.product-item:nth-child(1) { animation-delay: 0.1s; }
+.product-item:nth-child(2) { animation-delay: 0.2s; }
+.product-item:nth-child(3) { animation-delay: 0.3s; }
+.product-item:nth-child(4) { animation-delay: 0.4s; }
+.product-item:nth-child(5) { animation-delay: 0.5s; }
+.product-item:nth-child(6) { animation-delay: 0.6s; }
+
+/* Responsividade específica */
+@media (max-width: 768px) {
+    .price-section,
+    .status-section {
+        text-align: left !important;
+    }
+    
+    .product-item > div:first-child {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+}
+</style>
 {% endblock content %}

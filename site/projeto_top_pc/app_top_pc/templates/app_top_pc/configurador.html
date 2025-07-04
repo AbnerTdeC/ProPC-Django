@@ -6,83 +6,333 @@
 
 {% block content %}
 <script src="{% static 'js/configurador.js' %}"></script>
-<div class="configurador-container">
-    <h1>Configurador de PC</h1>
-    <p>Monte seu PC personalizado selecionando os componentes abaixo:</p>
+
+<h2>Configurador de PC</h2>
+<p style="text-align: center; margin-bottom: 30px; color: var(--subtitle-color);">
+    Monte seu PC personalizado selecionando os componentes abaixo:
+</p>
+
+<form method="post" class="configurador-form">
+    {% csrf_token %}
     
-    <form method="post">
-        {% csrf_token %}
+    <div class="configurador-grid" style="display: grid; gap: 25px;">
         {% for categoria in categorias %}
-            <div class="categoria-section" style="margin-bottom: 20px;">
-                <label for="categoria_{{ forloop.counter }}" style="font-weight: bold; display: block; margin-bottom: 5px;">
+            <div class="categoria-section content-box">
+                <label for="categoria_{{ forloop.counter }}" style="font-family: var(--font-primary); font-weight: bold; display: block; margin-bottom: 15px; color: var(--accent-color); font-size: 1.2em; text-transform: uppercase; letter-spacing: 0.5px;">
                     {{ categoria|title }}
-                    {% with produtos_categoria=produtos_por_categoria|get_item:categoria %}
-                        <span style="color: #666; font-size: 0.9em;">
-                            ({{ produtos_categoria|length }} produtos disponíveis)
+                    {% with componentes_categoria=componentes_por_categoria|get_item:categoria %}
+                        <span style="color: var(--text-color); font-size: 0.8em; font-weight: normal; text-transform: none; letter-spacing: normal;">
+                            ({{ componentes_categoria|length }} componentes disponíveis)
                         </span>
                     {% endwith %}
                 </label>
                 
                 <!-- Campo de pesquisa -->
-                <div style="position: relative; margin-bottom: 10px;">
-                    <input type="text" 
-                           id="pesquisa_{{ categoria }}" 
-                           placeholder="Pesquisar {{ categoria|title }}..."
-                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
-                           oninput="filtrarProdutos('{{ categoria }}', this.value)">
-                </div>
+                {# Removed all search bars from configurador page as per user request #}
 
-                <select name="categoria_{{ categoria }}" 
-                        id="categoria_{{ forloop.counter }}" 
-                        style="width: 100%; padding: 8px; margin-bottom: 10px;"
-                        data-categoria="{{ categoria }}">
-                    <option value="">Selecione um {{ categoria }}</option>
-                    {% for produto in produtos_por_categoria|get_item:categoria %}
-                        <option value="{{ produto.id }}" {% if selecionados|get_item:categoria == produto %}selected{% endif %}>
-                            {{ produto.nome }}
-                        </option>
-                    {% empty %}
-                        <option value="" disabled>Nenhum produto disponível para esta categoria</option>
-                    {% endfor %}
-                </select>
+                <div class="categoria-actions">
+                    <a href="{% url 'listar_processadores' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'cpu' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Processador
+                    </a>
+                    <a href="{% url 'listar_placas_video' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'video-card' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Placa de Vídeo
+                    </a>
+                    <a href="{% url 'listar_memorias' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'memory' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Memória RAM
+                    </a>
+                    <a href="{% url 'listar_placas_mae' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'motherboard' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Placa-Mãe
+                    </a>
+                    <a href="{% url 'listar_armazenamento' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'internal-hard-drive' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Armazenamento
+                    </a>
+                    <a href="{% url 'listar_fontes' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'power-supply' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Fonte
+                    </a>
+                    <a href="{% url 'listar_gabinetes' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'case' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Gabinete
+                    </a>
+                    <a href="{% url 'listar_coolers_cpu' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'cpu-cooler' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Cooler CPU
+                    </a>
+                    <a href="{% url 'listar_placas_expansao' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'expansion-card' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Placa de Expansão
+                    </a>
+                    <a href="{% url 'listar_perifericos' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'peripheral' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Periférico
+                    </a>
+                    <a href="{% url 'listar_case_fan' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'case-fan' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Case-Fan
+                    </a>
+                    <a href="{% url 'listar_sound_card' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'sound-card' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Sound-Card
+                    </a>
+                    <a href="{% url 'listar_wired_network_card' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'wired-network-card' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Wired Network Card
+                    </a>
+                    <a href="{% url 'listar_wireless_network_card' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'wireless-network-card' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Wireless Network Card
+                    </a>
+                    <a href="{% url 'listar_optical_drive' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'optical-drive' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Optical Drive
+                    </a>
+                    <a href="{% url 'listar_monitor' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'monitor' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Monitor
+                    </a>
+                    <a href="{% url 'listar_keyboard' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'keyboard' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Keyboard
+                    </a>
+                    <a href="{% url 'listar_mouse' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'mouse' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Mouse
+                    </a>
+                    <a href="{% url 'listar_speakers' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'speakers' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Speakers
+                    </a>
+                    <a href="{% url 'listar_headphones' %}" 
+                       class="btn-escolher-componente"
+                       {% if categoria == 'headphones' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                        Escolher Headphones
+                    </a>
+                </div>
                 
-                {% with produtos_categoria=produtos_por_categoria|get_item:categoria %}
-                    {% if not produtos_categoria %}
-                        <small style="color: #e74c3c; display: block;">
-                            ⚠️ Não foi possível carregar produtos para esta categoria. Verifique sua conexão com a internet.
+                {% with componentes_categoria=componentes_por_categoria|get_item:categoria %}
+                    {% if not componentes_categoria %}
+                        <small style="color: #ff4757; display: block; font-family: var(--font-secondary); font-size: 0.9em;">
+                            ⚠️ Não há componentes cadastrados para esta categoria.
                         </small>
                     {% endif %}
                 {% endwith %}
             </div>
         {% endfor %}
-        
-        <button type="submit" class="btn btn-primary" style="background-color: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-            Salvar Configuração
-        </button>
-    </form>
-
-    {% if selecionados %}
-        <div class="configuracao-selecionada" style="margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 5px;">
-            <h2>Configuração Selecionada</h2>
-            <ul style="list-style-type: none; padding: 0;">
-                {% for categoria, produto in selecionados.items %}
-                    <li style="padding: 5px 0; border-bottom: 1px solid #ddd;">
-                        <strong>{{ categoria|title }}:</strong> {{ produto.nome }}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
+    </div>
     
-    <!-- Debug information (remove in production) -->
-    {% if debug %}
-        <div style="margin-top: 30px; padding: 15px; background-color: #f1f1f1; border-radius: 5px; font-family: monospace; font-size: 12px;">
-            <h3>Debug Info:</h3>
-            <p>Total de categorias: {{ categorias|length }}</p>
-            {% for categoria in categorias %}
-                <p>{{ categoria }}: {{ produtos_por_categoria|get_item:categoria|length }} produtos</p>
+    <div style="text-align: center; margin-top: 30px;">
+        <button type="submit" class="btn btn-primary" style="font-size: 1.1em; padding: 15px 30px; text-transform: uppercase; letter-spacing: 1px;">
+            💾 Salvar Configuração
+        </button>
+    </div>
+</form>
+
+{% if selecionados %}
+    <div class="configuracao-selecionada">
+        <h2 style="color: var(--accent-color); font-family: var(--font-primary); margin-bottom: 25px; text-align: center;">
+            🖥️ Configuração Selecionada
+        </h2>
+        
+        <div class="componentes-selecionados" style="display: grid; gap: 20px;">
+            {% for categoria, componente in selecionados.items %}
+                <div class="componente-item" style="padding: 20px; background-color: var(--secondary-bg-color); border-radius: 8px; border-left: 4px solid var(--accent-color); transition: all 0.3s ease;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <div>
+                            <strong style="color: var(--accent-color); font-family: var(--font-primary); font-size: 1.1em; text-transform: uppercase; letter-spacing: 0.5px;">
+                                {{ categoria|title }}:
+                            </strong>
+                            <div style="color: var(--heading-color); font-size: 1.05em; margin-top: 5px; font-weight: 500;">
+                                {{ componente.nome }}
+                            </div>
+                        </div>
+                        {% if componente.imagem %}
+                            <img src="{{ componente.imagem }}" alt="{{ componente.nome }}" 
+                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 2px solid var(--accent-color);">
+                        {% endif %}
+                    </div>
+                    
+                    {% if componente.descricao %}
+                        <div style="color: var(--text-color); margin-bottom: 10px; font-size: 0.9em; line-height: 1.4; opacity: 0.9;">
+                            {{ componente.descricao|truncatewords:15 }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if componente.especificacoes %}
+                        <div style="margin-top: 15px; padding: 12px; background-color: var(--card-bg-color); border-radius: 6px; border: 1px solid var(--border-color);">
+                            <strong style="color: var(--accent-color); font-size: 0.9em; font-family: var(--font-primary);">
+                                Especificações:
+                            </strong>
+                            <div style="margin-top: 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+                                {% for chave, valor in componente.especificacoes.items %}
+                                    <div style="font-size: 0.85em; color: var(--text-color);">
+                                        <strong style="color: var(--accent-color);">{{ chave }}:</strong> {{ valor }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
             {% endfor %}
         </div>
-    {% endif %}
-</div>
+        
+        <!-- Resumo da configuração -->
+        <div style="margin-top: 30px; padding: 20px; background-color: var(--card-bg-color); border-radius: 8px; border: 2px solid var(--accent-color); text-align: center;">
+            <h3 style="color: var(--accent-color); font-family: var(--font-primary); margin-bottom: 15px;">
+                📊 Resumo da Configuração
+            </h3>
+            <div style="color: var(--text-color); font-size: 1.1em;">
+                <strong>{{ selecionados|length }}</strong> componentes selecionados de <strong>{{ categorias|length }}</strong> categorias disponíveis
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Debug information (remove in production) -->
+{% if debug %}
+    <div class="content-box" style="margin-top: 30px; border: 1px solid #ffa502; background-color: rgba(255, 165, 2, 0.1);">
+        <h3 style="color: #ffa502; font-family: var(--font-primary); margin-bottom: 15px;">
+            🔧 Debug Info
+        </h3>
+        <div style="font-family: 'Courier New', monospace; font-size: 0.85em; color: var(--text-color);">
+            <p><strong>Total de categorias:</strong> {{ categorias|length }}</p>
+            {% for categoria in categorias %}
+                <p><strong>{{ categoria }}:</strong> {{ componentes_por_categoria|get_item:categoria|length }} componentes</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+<style>
+/* Estilos específicos para o configurador */
+.configurador-form {
+    background: transparent;
+    padding: 0;
+    border: none;
+    margin: 0;
+}
+
+.btn-escolher-componente {
+    display: inline-block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    background-color: var(--accent-color);
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    text-decoration: none;
+    font-family: var(--font-secondary);
+    transition: all 0.3s ease;
+}
+
+.btn-escolher-componente:hover {
+    background-color: var(--accent-color-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 217, 255, 0.2);
+}
+
+.categoria-section {
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+    animation-fill-mode: both;
+}
+
+.categoria-section:nth-child(1) { animation-delay: 0.1s; }
+.categoria-section:nth-child(2) { animation-delay: 0.2s; }
+.categoria-section:nth-child(3) { animation-delay: 0.3s; }
+.categoria-section:nth-child(4) { animation-delay: 0.4s; }
+.categoria-section:nth-child(5) { animation-delay: 0.5s; }
+.categoria-section:nth-child(6) { animation-delay: 0.6s; }
+
+.categoria-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 217, 255, 0.15);
+    border-color: var(--accent-color);
+}
+
+.componente-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0, 217, 255, 0.2);
+}
+
+/* Melhorias para select */
+.categoria-section select {
+    cursor: pointer;
+}
+
+.categoria-section select:hover {
+    border-color: var(--accent-color);
+}
+
+.categoria-section select option {
+    background-color: var(--secondary-bg-color);
+    color: var(--text-color);
+    padding: 8px;
+}
+
+.categoria-section select option:hover,
+.categoria-section select option:checked {
+    background-color: var(--accent-color);
+    color: var(--primary-bg-color);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .configurador-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .componentes-selecionados {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .categoria-section {
+        padding: 15px;
+    }
+    
+    .componente-item {
+        padding: 15px !important;
+    }
+    
+    .componente-item > div:first-child {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+    
+    .componente-item img {
+        margin-top: 10px;
+        align-self: center;
+    }
+}
+
+@media (min-width: 769px) {
+    .configurador-grid {
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    }
+}
+</style>
 {% endblock content %}

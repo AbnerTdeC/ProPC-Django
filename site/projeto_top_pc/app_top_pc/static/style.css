@@ -7,6 +7,7 @@
     --card-bg-color: #1f1f32; /* Fundo para cards e seções */
     --text-color: #e0e0e0; /* Cor de texto principal (cinza claro) */
     --heading-color: #ffffff; /* Cor para títulos (branco) */
+    --subtitle-color: #006b8a; /* Cor para subtítulos (azul escuro) */
     --accent-color: #00d9ff; /* Azul neon vibrante para acentos */
     --accent-hover-color: #00bfff; /* Azul neon um pouco mais escuro para hover */
     --border-color: #3a3a5e; /* Cor para bordas sutis */
@@ -107,9 +108,10 @@ body {
 .site-main h5,
 .site-main h6 {
     font-family: var(--font-primary);
-    color: var(--heading-color);
+    color: #006b8a;
     margin-bottom: 20px;
-    text-shadow: 0 0 3px var(--accent-color);
+    text-shadow: 0 0 4px rgba(0, 107, 138, 0.3);
+    font-weight: 700;
 }
 
 .site-main h2 {
@@ -118,6 +120,8 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 30px;
+    color: #006b8a;
+    text-shadow: 0 0 6px rgba(0, 107, 138, 0.4);
 }
 
 /* Cards e Produtos */

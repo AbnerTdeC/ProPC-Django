@@ -1,15 +1,8 @@
 from django.db import models
-from django.utils import timezone
 
-# -----------------------------------------------------------------------------
-# Modelo para Categoria de Produtos
-# -----------------------------------------------------------------------------
 class Categoria(models.Model):
-    """
-    Representa a categoria de um produto.
-    """
-    nome = models.CharField(max_length=100, unique=True, help_text='Nome da categoria')
-    descricao = models.TextField(blank=True, null=True, help_text='Descrição da categoria')
+    nome = models.CharField(max_length=100, unique=True, help_text="Nome da categoria")
+    descricao = models.TextField(blank=True, null=True, help_text="Descrição da categoria")
 
     class Meta:
         verbose_name = "Categoria"
@@ -18,85 +11,15 @@ class Categoria(models.Model):
     def __str__(self):
         return self.nome
 
-# -----------------------------------------------------------------------------
-# Modelo para Usuário e Cliente (Relação de Especialização)
-# -----------------------------------------------------------------------------
-class Usuario(models.Model):
-    """
-    Modelo base de usuário, contendo informações comuns de login.
-    No diagrama, Cliente herda de Usuário. Em Django, isso é geralmente
-    modelado com uma relação OneToOneField.
-    """
-    nome = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-    senha = models.CharField(max_length=128)  # Em um projeto real, use o sistema de autenticação do Django
-    data_nascimento = models.DateField()
-
-    class Meta:
-        verbose_name = "Usuário"
-        verbose_name_plural = "Usuários"
-
-    def __str__(self):
-        return self.email
-
-class Cliente(models.Model):
-    """
-    Representa um cliente, que é um tipo especializado de Usuário.
-    """
-    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, primary_key=True)
-    cpf = models.CharField(max_length=14, unique=True, help_text='Formato: 000.000.000-00')
-    telefone = models.CharField(max_length=20, blank=True, null=True)
-
-    class Meta:
-        verbose_name = "Cliente"
-        verbose_name_plural = "Clientes"
-
-    def __str__(self):
-        return self.usuario.nome
-
-# -----------------------------------------------------------------------------
-# Modelo de Endereço (Associado ao Cliente)
-# -----------------------------------------------------------------------------
-class Endereco(models.Model):
-    """
-    Armazena os endereços de um cliente.
-    Um cliente pode ter vários endereços.
-    """
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='enderecos')
-    rua = models.CharField(max_length=255)
-    numero = models.CharField(max_length=10)
-    complemento = models.CharField(max_length=100, blank=True, null=True)
-    bairro = models.CharField(max_length=100)
-    cidade = models.CharField(max_length=100)
-    estado = models.CharField(max_length=2, help_text='Sigla do estado (ex: SP, RJ)')
-    cep = models.CharField(max_length=9, help_text='Formato: 00000-000')
-
-    class Meta:
-        verbose_name = "Endereço"
-        verbose_name_plural = "Endereços"
-        # Garante que um cliente não tenha o mesmo endereço cadastrado duas vezes
-        unique_together = [['cliente', 'cep', 'numero']]
-
-    def __str__(self):
-        return f"{self.rua}, {self.numero} - {self.cidade}/{self.estado}"
-
-# -----------------------------------------------------------------------------
-# Modelo de Produto
-# -----------------------------------------------------------------------------
+# Modelo original mantido para compatibilidade durante migração
 class Produto(models.Model):
-    """
-    Representa um produto disponível para venda.
-    """
     nome = models.CharField(max_length=255)
     descricao = models.TextField()
-    preco = models.DecimalField(max_digits=10, decimal_places=2, help_text='Preço do produto')
-    estoque = models.PositiveIntegerField(default=0, help_text='Quantidade em estoque')
-    categoria = models.ForeignKey(
-        Categoria,
-        on_delete=models.PROTECT, # Impede a exclusão de uma categoria se houver produtos nela
-        related_name='produtos'
-    )
-    imagem = models.ImageField(upload_to='produtos/', blank=True, null=True, help_text='Imagem do produto')
+    preco = models.DecimalField(max_digits=10, decimal_places=2, help_text="Preço do produto")
+    estoque = models.PositiveIntegerField(default=0, help_text="Quantidade em estoque")
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name="produtos")
+    tipo_componente = models.CharField(max_length=100, help_text="Tipo do componente para o configurador", default='hardware', blank=True)
+    imagem = models.ImageField(upload_to='produtos/', blank=True, null=True)
 
     class Meta:
         verbose_name = "Produto"
@@ -105,58 +28,149 @@ class Produto(models.Model):
     def __str__(self):
         return self.nome
 
-# -----------------------------------------------------------------------------
-# Modelos de Pedido e ItemPedido (Relação Muitos-para-Muitos com Tabela Intermediária)
-# -----------------------------------------------------------------------------
-class Pedido(models.Model):
-    """
-    Representa um pedido feito por um cliente.
-    """
-    STATUS_CHOICES = [
-        ('pendente', 'Pendente'),
-        ('processando', 'Processando'),
-        ('enviado', 'Enviado'),
-        ('entregue', 'Entregue'),
-        ('cancelado', 'Cancelado'),
+# Novo modelo para componentes base do configurador (todas as peças existentes)
+class ComponenteConfiguradorBase(models.Model):
+    TIPOS_COMPONENTE = [
+        ('cpu', 'Processador'),
+        ('cpu-cooler', 'Cooler CPU'),
+        ('motherboard', 'Placa-Mãe'),
+        ('memory', 'Memória RAM'),
+        ('internal-hard-drive', 'Armazenamento'),
+        ('video-card', 'Placa de Vídeo'),
+        ('power-supply', 'Fonte'),
+        ('case', 'Gabinete'),
+        ('case-fan', 'Cooler Gabinete'),
+        ('sound-card', 'Placa de Som'),
+        ('wired-network-card', 'Placa de Rede'),
+        ('wireless-network-card', 'Placa Wi-Fi'),
+        ('optical-drive', 'Drive Óptico'),
+        ('monitor', 'Monitor'),
+        ('keyboard', 'Teclado'),
+        ('mouse', 'Mouse'),
+        ('speakers', 'Caixas de Som'),
+        ('headphones', 'Fones de Ouvido'),
+        ('hardware', 'Hardware Geral'),
     ]
 
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='pedidos')
-    data_pedido = models.DateTimeField(default=timezone.now)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendente')
-    valor_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    produtos = models.ManyToManyField(
-        Produto,
-        through='ItemPedido', # Especifica o modelo intermediário
-        related_name='pedidos'
+    nome = models.CharField(max_length=255, help_text="Nome do componente")
+    descricao = models.TextField(help_text="Descrição detalhada do componente")
+    tipo_componente = models.CharField(
+        max_length=100, 
+        choices=TIPOS_COMPONENTE,
+        help_text="Tipo do componente para o configurador"
     )
+    categoria = models.ForeignKey(
+        Categoria, 
+        on_delete=models.PROTECT, 
+        related_name="componentes_configurador"
+    )
+    especificacoes = models.JSONField(
+        default=dict, 
+        blank=True,
+        help_text="Especificações técnicas em formato JSON"
+    )
+    imagem = models.ImageField(
+        upload_to='componentes/', 
+        blank=True, 
+        null=True,
+        help_text="Imagem do componente"
+    )
+    ativo = models.BooleanField(
+        default=True,
+        help_text="Se o componente está ativo no configurador"
+    )
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Pedido"
-        verbose_name_plural = "Pedidos"
-        ordering = ['-data_pedido'] # Ordena os pedidos mais recentes primeiro
+        verbose_name = "Componente do Configurador"
+        verbose_name_plural = "Componentes do Configurador"
+        ordering = ['tipo_componente', 'nome']
 
     def __str__(self):
-        return f"Pedido #{self.id} - {self.cliente.usuario.nome}"
+        return f"{self.nome} ({self.get_tipo_componente_display()})"
 
-class ItemPedido(models.Model):
-    """
-    Modelo intermediário que representa a relação entre Pedido e Produto.
-    Contém a quantidade e o preço do produto no momento da compra.
-    """
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
-    produto = models.ForeignKey(Produto, on_delete=models.PROTECT) # Protege o produto de ser deletado se estiver em um pedido
-    quantidade = models.PositiveIntegerField()
-    preco_unitario = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        help_text='Preço do produto no momento da compra'
+# Novo modelo para produtos do catálogo (apenas produtos em estoque/indisponíveis)
+class ProdutoCatalogo(models.Model):
+    STATUS_CHOICES = [
+        ('disponivel', 'Disponível'),
+        ('indisponivel', 'Indisponível'),
+        ('descontinuado', 'Descontinuado'),
+    ]
+
+    componente_base = models.ForeignKey(
+        ComponenteConfiguradorBase,
+        on_delete=models.PROTECT,
+        related_name="produtos_catalogo",
+        help_text="Componente base do configurador"
     )
+    preco = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        help_text="Preço atual do produto"
+    )
+    preco_promocional = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        blank=True, 
+        null=True,
+        help_text="Preço promocional (opcional)"
+    )
+    estoque = models.PositiveIntegerField(
+        default=0, 
+        help_text="Quantidade em estoque"
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='disponivel',
+        help_text="Status do produto no catálogo"
+    )
+    fornecedor = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Nome do fornecedor"
+    )
+    codigo_produto = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Código do produto no fornecedor"
+    )
+    observacoes = models.TextField(
+        blank=True,
+        help_text="Observações sobre o produto"
+    )
+    data_adicao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Item do Pedido"
-        verbose_name_plural = "Itens do Pedido"
-        # Garante que o mesmo produto não seja adicionado duas vezes ao mesmo pedido
-        unique_together = [['pedido', 'produto']]
+        verbose_name = "Produto do Catálogo"
+        verbose_name_plural = "Produtos do Catálogo"
+        ordering = ['-data_atualizacao']
 
     def __str__(self):
-        return f"{self.quantidade}x {self.produto.nome} no Pedido #{self.pedido.id}"
+        return f"{self.componente_base.nome} - R$ {self.preco}"
+
+    @property
+    def preco_final(self):
+        """Retorna o preço promocional se existir, senão o preço normal"""
+        return self.preco_promocional if self.preco_promocional else self.preco
+
+    @property
+    def disponivel(self):
+        """Verifica se o produto está disponível"""
+        return self.status == 'disponivel' and self.estoque > 0
+
+# Modelo para compatibilidade (pode ser removido após migração completa)
+class Componente(models.Model):
+    nome = models.CharField(max_length=255)
+    descricao = models.TextField()
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT)
+    imagem = models.ImageField(upload_to='componentes/', blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Componente"
+        verbose_name_plural = "Componentes"
+
+    def __str__(self):
+        return self.nome

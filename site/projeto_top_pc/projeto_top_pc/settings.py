@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app_top_pc',
+    'app_catalogo',
 ]
 
 MIDDLEWARE = [
@@ -76,9 +77,15 @@ WSGI_APPLICATION = 'projeto_top_pc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db_configurador.sqlite3',
+    },
+    'catalogo': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db_catalogo.sqlite3',
     }
 }
+
+DATABASE_ROUTERS = ['projeto_top_pc.database_routers.DatabaseRouter']
 
 
 # Password validation
